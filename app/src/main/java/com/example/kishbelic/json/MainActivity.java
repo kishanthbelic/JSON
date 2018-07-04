@@ -76,44 +76,10 @@ TextView txtV;
         txtV = (TextView)findViewById(R.id.txtV);
 
         DownloadTask task = new DownloadTask();
-        task.execute("https://api.androidhive.info/contacts/");
+        //task.execute("https://api.androidhive.info/contacts/");
+        task.execute("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22");
 
 
-
-        /////
-        /*
-        try {
-
-            ListView listView = (ListView) findViewById(R.id.list_view);
-
-            List<String> items = new ArrayList<>();
-            JSONObject root = new JSONObject(json_string);
-
-            JSONArray array = root.getJSONArray("array");
-
-            this.setTitle(root.getString("title"));
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                items.add(object.getString("company"));
-            }
-
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1, items);
-
-            if (listView != null) {
-                listView.setAdapter(adapter);
-            }
-
-            JSONObject nested = root.getJSONObject("nested");
-            Log.d("TAG", "flag value " + nested.getBoolean("flag"));
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-*/
 
     }
 
@@ -149,8 +115,9 @@ TextView txtV;
 
                    // Log.i("connection : ",data + "");
                 }
-                Log.i("connection : ",result + "");
+                Log.i("Result: ",result + "");
 
+                json_string =result;
                 return result;
 
 
@@ -163,6 +130,40 @@ TextView txtV;
             return null;
         }
 
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
 
+            try {
+
+                //outer JSON object
+                JSONObject jsonObject = new JSONObject(result);
+
+                String weatherInfo = jsonObject.getString("weather");
+
+                Log.i("Weather content", weatherInfo);
+
+                JSONArray arr = new JSONArray(weatherInfo);
+
+                for (int i = 0; i < arr.length(); i++) {
+                    //split inner individual part here
+                    JSONObject jsonPart = arr.getJSONObject(i);
+
+
+                    Log.i("main", jsonPart.getString("main"));
+                    Log.i("description", jsonPart.getString("description"));
+
+                    txtV.setText(" main : "+ jsonPart.getString("main") + "description : " +jsonPart.getString("description"));
+
+                }
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
     }
 }
